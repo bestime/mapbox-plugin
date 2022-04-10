@@ -4,7 +4,7 @@
 
 ### 类似迁徙图：MapboxPluginMigrate
 
-- [demo预览](./examples/MapboxPluginMigrate/index.html)
+- [demo预览](https://bestime.github.io/mapbox-plugin/examples/MapboxPluginMigrate/index.html)
 
 ```javascript
   /**
