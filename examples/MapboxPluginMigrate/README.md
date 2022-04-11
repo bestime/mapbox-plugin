@@ -20,8 +20,8 @@ iFly.add({
   id: "a", // id不要重复了
   speed: 0.01, // 飞行速度
   color: "rgb(255, 0, 0)", // 线条、闪烁点颜色
-  flyIcon: flyIcon, // 飞行图标（不支持url）
-  targetIcon: mapboxCircleImage([255, 0, 0], 200), // 闪烁图标（不支持url）
+  iconFly: 'icon01', // 飞行图标（mapbox中的图片ID）
+  iconTarget: 'icon02', // 闪烁图标（mapbox中的图片ID）
   curveness: 0.5,// 贝塞尔弧度
   path: [
     {
