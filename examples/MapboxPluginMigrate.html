@@ -5,10 +5,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-    <script src="../../static/js/mapbox-gl.js"></script>
-    <script src="../../static/js/turf.min.js"></script>
-    <script src="../../static/js/mapboxCircleImage.js"></script>
-    <script src="./MapboxPluginMigrate@1.0.0.min.js?t=1"></script>
+    <link href="./css/mapbox-gl.css" rel="stylesheet" />
+    <script src="./js/mapbox-gl.js"></script>
+    <script src="./js/turf.min.js"></script>
+    <script src="../dist//MapboxPluginMigrate@1.0.1.min.js"></script>
+    <script src="./js/mapboxCircleImage.js"></script>
 
     <style>
       h1 {
@@ -50,7 +51,7 @@
               visibility: "visible",
             },
             paint: {
-              "background-color": "#000",
+              "background-color": "red",
             },
           },
         ],
@@ -58,50 +59,48 @@
 
       const map = new mapboxgl.Map({
         container: "map",
-        style: "mapbox://styles/mapbox/light-v10",
+        style: styleCustom || "mapbox://styles/mapbox/light-v10",
         center: [107.542735, 29.146182],
         zoom: 4.2,
         pitch: 40,
       })
 
-      var iFly, demoData
+ 
 
+      var iFly, demoData;
+      
       map.on("load", function () {
-        map.loadImage("../../static/images/1.png", (err, v) => {
-          map.loadImage("../../static/images/wendu.png", (err, v2) => {
-            map.loadImage("../../static/images/6.png", (err, v3) => {
-              // 开始
-              map.addImage("icon01", v)
-              map.addImage("icon02", v2)
-              map.addImage("icon03", v3)
+        
+        map.loadImage("./images/1.png", (err, v) => {
+          map.loadImage("./images/wendu.png", (err, v2) => {
+            map.loadImage("./images/6.png", (err, v3) => {
+              map.addImage('icon01', v)
+              map.addImage('icon02', v2)
+              map.addImage('icon03', v3)
 
-              map.addImage("ped01", mapboxCircleImage([255, 0, 0], 200), {
-                pixelRatio: 2,
-              })
-              map.addImage("ped02", mapboxCircleImage([0, 0, 255], 200), {
-                pixelRatio: 2,
-              })
-              map.addImage("ped03", mapboxCircleImage([255, 0, 255], 500), {
-                pixelRatio: 2,
-              })
-              map.addImage("ped04", mapboxCircleImage([0, 0, 0], 100), {
-                pixelRatio: 2,
-              })
-              map.addImage("ped05", mapboxCircleImage([154, 100, 5], 100), {
-                pixelRatio: 2,
-              })
+              map.addImage('ped01', mapboxCircleImage([255, 0, 0], 200), { pixelRatio: 2 })
+              map.addImage('ped02', mapboxCircleImage([0, 0, 255], 200), { pixelRatio: 2 })
+              map.addImage('ped03', mapboxCircleImage([255, 0, 255], 500), { pixelRatio: 2 })
+              map.addImage('ped04', mapboxCircleImage([0, 0, 0], 100), { pixelRatio: 2 })
+              map.addImage('ped05', mapboxCircleImage([154, 100, 5], 100), { pixelRatio: 2 })
 
+              
+              
               // 开始
               document.body.style.opacity = "1"
-              iFly = new MapboxPluginMigrate("随机ID", map, turf)
+              iFly = new MapboxPluginMigrate('随机ID', map, turf)
               demoData = {
                 a: {
                   id: "a",
+                  count: 2,
                   speed: 0.01,
                   color: "rgb(255, 0, 0)",
-                  iconFly: "icon01",
-                  iconTarget: "ped01",
+                  iconFly: 'icon01',
+                  iconTarget: 'ped01',
                   curveness: 0.5,
+                  onRemove: function (id) {
+                    console.log("移除了", id)
+                  },
                   path: [
                     {
                       name: "北京",
@@ -117,11 +116,12 @@
                 },
                 b: {
                   id: "b",
+                  once: true,
                   color: "rgb(0, 0, 255)",
                   curveness: -0.2,
                   speed: 0.005,
-                  iconFly: "icon02",
-                  iconTarget: "ped02",
+                  iconFly: 'icon02',
+                  iconTarget: 'ped02',
                   path: [
                     {
                       name: "北京",
@@ -140,8 +140,8 @@
                   color: "rgb(255, 0, 255)",
                   curveness: -0.2,
                   speed: 0.002,
-                  iconFly: "icon01",
-                  iconTarget: "ped03",
+                  iconFly: 'icon01',
+                  iconTarget: 'ped03',
                   path: [
                     {
                       name: "北京",
@@ -160,8 +160,8 @@
                   color: "rgb(0, 0, 0)",
                   curveness: -0.2,
                   speed: 0.002,
-                  iconFly: "icon02",
-                  iconTarget: "ped04",
+                  iconFly: 'icon02',
+                  iconTarget: 'ped04',
                   path: [
                     {
                       name: "北京",
@@ -180,8 +180,8 @@
                   color: "rgb(154, 100, 5)",
                   curveness: -0.2,
                   speed: 0.01,
-                  iconFly: "icon02",
-                  iconTarget: "ped04",
+                  iconFly: 'icon02',
+                  iconTarget: 'ped04',
                   path: [
                     {
                       name: "北京",
@@ -200,8 +200,8 @@
                   color: "rgb(154, 100, 5)",
                   curveness: 0.5,
                   speed: 0.01,
-                  iconFly: "icon03",
-                  iconTarget: "ped05",
+                  iconFly: 'icon03',
+                  iconTarget: 'ped05',
                   path: [
                     {
                       name: "北京",
@@ -216,14 +216,15 @@
                   ],
                 },
               }
-
-              toAddPoint("c")
-              toAddPoint("d")
-              toAddPoint("e")
-              toAddPoint("f")
+              
+              toAddPoint('c')
+              toAddPoint('d')
+              toAddPoint('e')
+              toAddPoint('f')
+              
             })
-            // 结束
-          })
+              // 结束
+            })
         })
       })
 
