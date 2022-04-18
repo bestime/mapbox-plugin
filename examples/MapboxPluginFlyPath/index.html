@@ -5,13 +5,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-    <script src="./js/bestime@beta.min.js"></script>
-    <script src="./js/jquery1.9.1.min.js"></script>
-    <link href="./css/mapbox-gl.css" rel="stylesheet" />
-    <script src="./js/mapbox-gl.js"></script>
-    <script src="./js/turf.min.js"></script>
-    <!-- <script src="https://cdn.bootcdn.net/ajax/libs/Turf.js/6.5.0/turf.min.js"></script> -->
-    <script src="../dist/MapboxPluginFlyPath@1.0.0.min.js"></script>
+    <script src="../../static/js/bestime@beta.min.js"></script>
+    <script src="../../static/js/jquery1.9.1.min.js"></script>
+    <link href="../../static/css/mapbox-gl.css" rel="stylesheet" />
+    <script src="../../static/js/mapbox-gl.js"></script>
+    <script src="../../static/js/turf.min.js"></script>
+    <script src="../../dist/MapboxPluginFlyPath@1.0.0.min.js"></script>
     
 
 <script>
@@ -82,12 +81,12 @@
       var iFly
       
       map.on("load", async function () {
-        const trackJson = await getJsonFile('./json/track.json')
+        const trackJson = await getJsonFile('../../static/json/track.json')
         
         iFly = new MapboxPluginFlyPath('DKDKO',map, turf, {
           step: 1000,
           curveness: 1,
-          iconPath: './images/fj4.png'
+          iconPath: '../../static/images/fj4.png'
         })
         
         iFly.play(trackJson.data, function (coordinate, percent, isEnd) {
