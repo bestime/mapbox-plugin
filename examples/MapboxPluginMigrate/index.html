@@ -5,11 +5,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-    <link href="./css/mapbox-gl.css" rel="stylesheet" />
-    <script src="./js/mapbox-gl.js"></script>
-    <script src="./js/turf.min.js"></script>
-    <script src="../dist//MapboxPluginMigrate@1.0.1.min.js"></script>
-    <script src="./js/mapboxCircleImage.js"></script>
+    <link href="../../static/css/mapbox-gl.css" rel="stylesheet" />
+    <script src="../../static/js/mapbox-gl.js"></script>
+    <script src="../../static/js/turf.min.js"></script>
+    <script src="../../dist/MapboxPluginMigrate@1.0.1.min.js"></script>
+    <script src="../../static/js/mapboxCircleImage.js"></script>
 
     <style>
       h1 {
@@ -51,7 +51,7 @@
               visibility: "visible",
             },
             paint: {
-              "background-color": "red",
+              "background-color": "yellow",
             },
           },
         ],
@@ -71,9 +71,9 @@
       
       map.on("load", function () {
         
-        map.loadImage("./images/1.png", (err, v) => {
-          map.loadImage("./images/wendu.png", (err, v2) => {
-            map.loadImage("./images/6.png", (err, v3) => {
+        map.loadImage("../../static/images/1.png", (err, v) => {
+          map.loadImage("../../static/images/wendu.png", (err, v2) => {
+            map.loadImage("../../static/images/6.png", (err, v3) => {
               map.addImage('icon01', v)
               map.addImage('icon02', v2)
               map.addImage('icon03', v3)
