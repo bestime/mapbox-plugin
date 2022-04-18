@@ -1,12 +1,12 @@
 ## 初始化
-```
+```javascript
 // iMap => mapbox实例化，请在onload后使用
 // turf => turf库。用来处理部分计算
 const iFly = MapboxPluginMigrate('ID', iMap, turf)
 ```
 
 ## 添加一条线
-```
+```javascript
 // 数据，经纬度集合
 const data = {
   // id
@@ -50,6 +50,6 @@ iFly.add(data)
 ```
 
 ## 销毁
-```
+```javascript
 iFly.dispose()
 ```
