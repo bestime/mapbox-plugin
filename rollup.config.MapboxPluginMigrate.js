@@ -31,8 +31,8 @@ export default {
       '',
       '@QQ 1174295440',
       '@author Jiang Yang (Bestime)',
-      '@see https://github.com/bestime/mapbox-plugin',
-      `@update ${formatTime(null, new Date())}`,
+      '@see https://github.com/bestime/mapbox-plugin/tree/master/examples/MapboxPluginMigrate',
+      `@update ${formatTime('YYYY-MM-DD HH:mm:ss', new Date())}`,
     ].join('\n'))
   ]
 };

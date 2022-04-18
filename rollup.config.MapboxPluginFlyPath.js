@@ -27,12 +27,12 @@ export default {
       }
     }),
     banner([
-      `mapbox路径运动 ${TOOL_NAME}`,
+      `mapbox多点运动 ${TOOL_NAME}`,
       '',
       '@QQ 1174295440',
       '@author Jiang Yang (Bestime)',
-      '@see https://github.com/bestime/mapbox-plugin',
-      `@update ${formatTime(null, new Date())}`,
+      '@see https://github.com/bestime/mapbox-plugin/tree/master/examples/MapboxPluginFlyPath',
+      `@update ${formatTime('YYYY-MM-DD HH:mm:ss', new Date())}`,
     ].join('\n'))
   ]
 };
