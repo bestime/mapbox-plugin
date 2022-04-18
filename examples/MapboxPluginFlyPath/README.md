@@ -1,3 +1,6 @@
+## 资源
+- [在线示例](https://bestime.github.io/mapbox-plugin/examples/MapboxPluginFlyPath/index.html)
+
 ## 初始化
 ```javascript
 // iMap => mapbox实例化，请在onload后使用
