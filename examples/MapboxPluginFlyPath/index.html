@@ -10,7 +10,7 @@
     <link href="../../static/css/mapbox-gl.css" rel="stylesheet" />
     <script src="../../static/js/mapbox-gl.js"></script>
     <script src="../../static/js/turf.min.js"></script>
-    <script src="../../dist/MapboxPluginFlyPath@1.0.0.min.js"></script>
+    <script src="../../dist/MapboxPluginFlyPath@1.0.1.min.js"></script>
     
 
 <script>
@@ -72,8 +72,8 @@
         container: "map",
         style: styleCustom || "mapbox://styles/mapbox/light-v10",
         center: [107.542735, 29.546182],
-        zoom: 8,
-        pitch: 40,
+        zoom: 7,
+        pitch: 0,
       })
 
     
@@ -84,7 +84,8 @@
         const trackJson = await getJsonFile('../../static/json/track.json')
         
         iFly = new MapboxPluginFlyPath('DKDKO',map, turf, {
-          step: 1000,
+          loop: true,
+          step: 100000,
           curveness: 1,
           iconPath: '../../static/images/fj4.png'
         })
