@@ -70,9 +70,9 @@ export default function MapboxPluginMigrate(id, map, turfLibrary) {
     source: this.SOURCE_ID_PATH,
     type: "line",
     paint: {
-      "line-width": 2,
+      "line-width": 1,
       "line-color": ["get", "color"],
-      "line-dasharray": [4, 2],
+      "line-dasharray": ['get', 'lineDashArray'],
     },
   })
 
@@ -89,7 +89,7 @@ export default function MapboxPluginMigrate(id, map, turfLibrary) {
     source: this.SOURCE_ID_POINT,
     type: "symbol",
     layout: {
-      "icon-size": 1,
+      "icon-size": ['get', 'flyIconScale'],
       "icon-image": ["get", "flyIconId"],
       "icon-rotate": ["get", "bearing"],
       "icon-rotation-alignment": "map",
@@ -98,7 +98,9 @@ export default function MapboxPluginMigrate(id, map, turfLibrary) {
     },
   })
 
-  this.startPlay()
+  
+
+  
 }
 
 MapboxPluginMigrate.prototype.getAllIconPoint = function () {
@@ -128,6 +130,7 @@ MapboxPluginMigrate.prototype.getAllLinesFeature = function () {
       type: "Feature",
       properties: {
         color: item.data.color,
+        lineDashArray: item.lineDashArray,
       },
       geometry: {
         type: "LineString",
@@ -148,6 +151,7 @@ MapboxPluginMigrate.prototype.getAllFlyFeature = function () {
     return {
       type: "Feature",
       properties: {
+        flyIconScale: item.flyIconScale,
         flyIconId: item.flyIconId,
         bearing: item.bearing,
       },
@@ -164,7 +168,9 @@ MapboxPluginMigrate.prototype.getAllFlyFeature = function () {
 }
 
 MapboxPluginMigrate.prototype.dispose = function () {
+  
   clearInterval(this.timer)
+  
   removeLayer(this.map, this.LAYER_ID_POINT)
   removeLayer(this.map, this.LAYER_ID_PATH)
   removeLayer(this.map, this.LAYER_ID_SHAN_ICON)
@@ -178,18 +184,50 @@ MapboxPluginMigrate.prototype.dispose = function () {
     removeImage(this.map, item.flyIconId)
   })
 
+  
+
   this.records = undefined
 }
 
 MapboxPluginMigrate.prototype.startPlay = function () {
   var self = this
+
   clearInterval(this.timer)
   this.timer = setInterval(() => {
+    
+    if(this.records.length===0) {
+      return this.clear()
+    }
     this.records.forEach((item) => {
-      if (item.delete) return
+      
+      
       const start = item.data.path[0].coordinate
       const end = item.data.path[1].coordinate
-      item.percent += item.direction * item.speed
+      item.currentDistence += item.direction * item.speed
+      
+      let coordinates;
+      
+      if(item.currentDistence<=0) {
+        coordinates = start
+        item.direction *= -1
+        handleCount()
+      } else if(item.currentDistence>=item.totalDistence) {
+        item.currentDistence = item.totalDistence
+        clearInterval(this._timer)
+        coordinates = end
+        item.direction *= -1
+        handleCount()
+      } else if(item.curveness !== 0){
+        coordinates = getQuadraticBezierPath(
+          start,
+          end,
+          item.curveness,
+          item.currentDistence/item.totalDistence
+        )      
+      }
+
+      // console.log("lineDistance", item.direction,item.currentDistence)
+      
 
       function handleCount () {
         item.count++
@@ -199,31 +237,13 @@ MapboxPluginMigrate.prototype.startPlay = function () {
         }
       }
 
-      if (item.percent > 1) {
-        item.direction = -1
-        item.percent = 1
-        
-        handleCount()
-      } else if (item.percent <= 0) {
-        item.percent = 0
-        item.direction = 1
-        
-        handleCount()
-        
-
-      }
 
       const prePoint = item.coordinates
-      const newponit = getQuadraticBezierPath(
-        start,
-        end,
-        item.curveness,
-        item.percent
-      )
-      item.coordinates = newponit
+  
+      item.coordinates = coordinates
       item.bearing = turfInject.bearing(
         turfInject.point(prePoint),
-        turfInject.point(newponit)
+        turfInject.point(coordinates)
       )
 
       this._updateFlyIcon()
@@ -232,22 +252,42 @@ MapboxPluginMigrate.prototype.startPlay = function () {
 }
 
 MapboxPluginMigrate.prototype._updatePathAndTarget = function () {
-  this.map.getSource(this.SOURCE_ID_PATH).setData(this.getAllLinesFeature())
-  this.map.getSource(this.SOURCE_ID_SHAN_ICON).setData(this.getAllIconPoint())
+  const iSource01 = this.map.getSource(this.SOURCE_ID_PATH)
+  const iSource02 = this.map.getSource(this.SOURCE_ID_SHAN_ICON)
+  iSource01 && iSource01.setData(this.getAllLinesFeature())
+  iSource02 && iSource02.setData(this.getAllIconPoint())
 }
 
 MapboxPluginMigrate.prototype._updateFlyIcon = function () {
   this.map.getSource(this.SOURCE_ID_POINT).setData(this.getAllFlyFeature())
 }
 
+
+
+MapboxPluginMigrate.prototype.clear = function () {
+  clearInterval(this.timer)
+  this.removeById(undefined)
+}
+
+/**
+ * 清除一条数据
+ * @param {string} [id=undefined] 如果没有ID，就全部清除
+*/
 MapboxPluginMigrate.prototype.removeById = function (id) {
   for (let a = 0; a < this.records.length; a++) {
-    if (this.records[a].id === id) {
+    if (this.records[a].id === id || id===undefined) {
       this.records.splice(a--, 1)
     }
   }
-  this._updateFlyIcon()
+  
   this._updatePathAndTarget()
+  this._updateFlyIcon()
+  
+  clearTimeout(this._timerout)
+  this._timerout = setTimeout(() => {
+    this._updatePathAndTarget()
+    this._updateFlyIcon()
+  }, 100)
 }
 
 MapboxPluginMigrate.prototype.add = function (line) {
@@ -257,21 +297,43 @@ MapboxPluginMigrate.prototype.add = function (line) {
 
   if (existPointId) return
 
+  const route = {
+    type: 'Feature',
+    geometry: {
+      type: 'LineString',
+      coordinates: [
+        line.path[0].coordinate,
+        line.path[1].coordinate
+      ],
+    },
+  }
+  
+  // 总长度
+  const lineDistance = turfInject.lineDistance(route, {
+    units: 'meters'
+  })
+
+  // console.log('turfInject', lineDistance)
+
+  
   
   this.records.push({
     id: line.id,
-    delete: false,
     onRemove: line.onRemove,
     speed: line.speed,
+    currentDistence: _Number(line.currentDistence),
     curveness: line.curveness,
     flyIconId: line.iconFly,
+    flyIconScale: line.flyIconScale==null? 1:line.flyIconScale,
+    lineDashArray: line.lineDashArray || [4, 2],
     targetIcon: line.iconTarget,
-    direction: 1, // 当前运动方向
-    percent: 0, // 当前百分比
+    percent: line.percent||0, // 当前百分比
+    direction: line.direction||1, // 当前运动方向
     data: line, // 原始数据
     bearing: 0, // 当前旋转度
     count: 0, // 跑了几次
     stopCount: _Number(line.count), // 第几次停止
+    totalDistence: lineDistance,
     lines: createLines(
       line.path[0].coordinate,
       line.path[1].coordinate,
@@ -281,4 +343,5 @@ MapboxPluginMigrate.prototype.add = function (line) {
   })
 
   this._updatePathAndTarget()
+  this.startPlay()
 }

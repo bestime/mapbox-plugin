@@ -4,52 +4,32 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>图片</title>
     <script src="../../static/js/bestime@beta.min.js"></script>
     <script src="../../static/js/jquery1.9.1.min.js"></script>
     <link href="../../static/css/mapbox-gl.css" rel="stylesheet" />
     <script src="../../static/js/mapbox-gl.js"></script>
     <script src="../../static/js/turf.min.js"></script>
-    <script src="../../dist/MapboxPluginFlyPath@1.0.1.min.js"></script>
-    
+    <script src="../../dist/MapboxImageAnamorphose.js"></script>
 
-<script>
-
-
-
-</script>
-
-
+    <script></script>
 
     <style>
       h1 {
         text-shadow: 1px 2px 0 white, -1px -2px 0 white;
         background: #000;
       }
+      canvas {
+        image-rendering: pixelated;
+      }
     </style>
   </head>
   <body>
-    <button onclick="toDispose()">销毁</button>
+    
     <div id="map" style="width: 1000px; height: 800px"></div>
     <script>
-
-      /**
-       * 获取json文件
-       */
-      function getJsonFile (url) {
-        return new Promise(resolve => {
-          $.getJSON(url)
-            .success(function (res) {
-              resolve(res)
-            })
-            .error(function (err) {
-              resolve()
-            })
-        })
-      }
       mapboxgl.accessToken =
         "pk.eyJ1IjoiZXhhbXBsZXMiLCJhIjoiY2p1dHRybDR5MGJuZjQzcGhrZ2doeGgwNyJ9.a-vxW4UaxOoUMWUTGnEArw"
-
       const styleCustom = {
         version: 8,
 
@@ -62,7 +42,7 @@
               visibility: "visible",
             },
             paint: {
-              "background-color": "red",
+              "background-color": "#eee",
             },
           },
         ],
@@ -71,41 +51,46 @@
       const map = new mapboxgl.Map({
         container: "map",
         style: styleCustom || "mapbox://styles/mapbox/light-v10",
-        center: [107.542735, 29.546182],
+        center: [107.542735, 29.346182],
         zoom: 7,
         pitch: 0,
       })
 
-    
-
-      var iFly
-      
-      map.on("load", async function () {
-        const trackJson = await getJsonFile('../../static/json/track.json')
-        
-        iFly = new MapboxPluginFlyPath('DKDKO',map, turf, {
-          loop: true,
-          step: 100000,
-          curveness: 1,
-          iconPath: '../../static/images/fj4.png'
-        })
-        
-        iFly.play(trackJson.data, function (coordinate, percent, isEnd) {
-          
-          // console.log('当前坐标',coordinate, percent)
-          if(percent===0) {
-            // console.log("新的起点", coordinate)
-          }
-          if(isEnd) {
-            console.log("跑完了", percent, isEnd)
-          }
-        })
+      const iImage = new MapboxImageAnamorphose(map, {
+        basicZoom: 7
       })
 
+      iImage.updateImage({
+        url: '../../static/images/radar.png'
+      })
 
-      function toDispose () {
-        iFly && iFly.dispose()
-      }
+      map.on('click', ev => {
+        console.log(ev.lngLat)
+      })
+
+      map.on("load", async function (ev) {
+        const ddd = map.getCanvas()
+        console.log("ddd", iImage)
+
+        map.addSource("canvas-source", {
+          type: "canvas",
+          canvas: iImage.getCanvasElement(),
+          coordinates: [
+            [103.88268403806066, 32.79639314091421],
+            [110.71518403806066, 32.79639314091421],
+            [110.71518403806066, 26.868893140914217],
+            [103.88268403806066, 26.868893140914217],
+          ],
+          // Set to true if the canvas source is animated. If the canvas is static, animate should be set to false to improve performance.
+          animate: true,
+        })
+
+        map.addLayer({
+          id: "canvas-layer",
+          type: "raster",
+          source: "canvas-source",
+        })
+      })
     </script>
   </body>
 </html>

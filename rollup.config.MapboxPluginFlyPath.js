@@ -2,7 +2,7 @@ import { uglify } from 'rollup-plugin-uglify'
 import banner from 'rollup-plugin-banner'
 import babel from '@rollup/plugin-babel';
 
-const TOOL_NAME = `MapboxPluginFlyPath@1.0.0.min.js`;
+const TOOL_NAME = `MapboxPluginFlyPath@1.0.1.min.js`;
 import formatTime from './src/bestime/formatTime'
 
 export default {

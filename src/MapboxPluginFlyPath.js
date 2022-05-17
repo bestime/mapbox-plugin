@@ -23,6 +23,7 @@ export default function MapboxPluginFlyPath (id, map, turfLibrary, options) {
   turfInject = turfLibrary
 
   this.options = assign({
+    loop: false, // 是否循环播放
     step: 500, // 每次移动距离米
     curveness: 1, //贝塞尔弧度
     lineColor: 'rgba(0,0,0,0.6)', // 路径颜色
@@ -154,7 +155,7 @@ MapboxPluginFlyPath.prototype._twoPoint = function (isBeginPoint, start, end, ca
       units: 'meters'
     }).geometry.coordinates
 
-    if(_distance===0) {
+    if(_distance<=0) {
       coordinates = start
     } else if(_distance>=lineDistance) {
       _distance = lineDistance
@@ -246,19 +247,24 @@ MapboxPluginFlyPath.prototype.play = function (list, callback) {
   dataReady(function () {
     if(self._iconReady) {
       ;(function loopPlay (index) {
-    
-        if(index<list.length-1 && self._isMounted) {
+        if(!self._isMounted) return;
+        // console.log("ddd", index,list.length)
+        if(index<list.length-1) {
           endIndex = index + 1
           
           self._twoPoint(index===0, list[index], list[endIndex], function (current, percent) {
             
             var idEnd = percent === 1 && endIndex===list.length-1
             callback && callback(current, percent, idEnd)
+            
             if(percent===1) {
               loopPlay(endIndex)
             }
             // 
           })
+        } else if(self.options.loop){
+          self.clear()
+          loopPlay(0)
         }
       })(0);
       return true;
